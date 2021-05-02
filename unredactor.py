@@ -1,7 +1,7 @@
 
 import sklearn
 import spacy
-
+import glob
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier 
@@ -32,12 +32,18 @@ def make_features(sentence, ne="PERSON"):
 
 def main():
     # print(len(sample))
+    dire = glob.glob("train_files/*.txt")
+    data =[]
+    for f in dire:
+        temp_f = open(f,"r")
+        data.append(temp_f.read())
+        #print(data)
 
     features = []
-    for s in sample:
+    for s in data:
         features.extend(make_features(s))
 
-    # print(features)
+    print(features)
 
     v = DictVectorizer(sparse=False)
     train_X = v.fit_transform([x for (x,y) in features[:-1]])
@@ -46,19 +52,19 @@ def main():
     test_X = v.fit_transform([x for (x,y) in features[-1:]])
     test_y = [y for (x,y) in features[-1:]]
 
-    #clf = DecisionTreeClassifier(criterion="entropy")
+    clf = DecisionTreeClassifier(criterion="entropy")
     clf = KNeighborsClassifier(n_neighbors=3)
     clf.fit(train_X, train_y)
 
     print("Decison Tree: ", clf.predict(test_X), clf.predict_proba(test_X), test_y)
 
     print("Cross Val Score: ", cross_val_score(clf,
-                                               v.fit_transform([x for (x,y) in features]),
+                                              v.fit_transform([x for (x,y) in features]),
                                                [y for (x,y) in features],
                                                cv=2))
 
 
 
 if __name__ == "__main__":
-    nlp = spacy.load("en_core_web_lg")
+    nlp = spacy.load("en_core_web_sm")
     main()

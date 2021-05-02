@@ -2,9 +2,9 @@ import spacy
 import glob
 import nltk
 import argparse
-from spacy.matcher import Matcher
-from PyDictionary import PyDictionary
-dic=PyDictionary()
+#from spacy.matcher import Matcher
+#from PyDictionary import PyDictionary
+#dic=PyDictionary()
 nlp = spacy.load('en_core_web_sm')
 nlp.pipe_names
 ner = nlp.get_pipe('ner')
@@ -30,9 +30,9 @@ def main(input_f):
     for f in dire:
         temp_f = open(f,"r")
         #redact phone
-        temp,phone_redact = redactPhone(temp_f.read())
+        #temp,phone_redact = redactPhone(temp_f.read())
         # redact name
-        temp,name_redact = redactName(temp)
+        temp,name_redact = redactName(temp_f.read())
         name = f.split(".")
         result = open(name[0]+".redacted","w")
         result.write(temp)
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     parser.add_argument("--input", type=str, required=True,help="get in input")
     args = parser.parse_args()
     print(args.input)
-    main(args.input,args.concept)
+    main(args.input)

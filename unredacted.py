@@ -25,11 +25,14 @@ def make_features(sentence, ne="PERSON"):
             # Number of occurences?
             D.append((d, e.text))
     return D
- def make_features_redacted(sentence, ne="(REDACTED)"):
+def make_features_redacted(sentence, ne="REDACTED"):
     doc = nlp(sentence)
     D = []
+    #print(doc.ents)
     for e in doc.ents:
+        print(e.text)
         if e.text == ne:
+            print("im here")
             d = {}
             d["length"] = len(e.text)
             d["word_idx"] = e.start
@@ -50,14 +53,14 @@ def main():
     features = []
     for s in data:
         features.extend(make_features(s))
-    print(features)
+    #print(features)
     
     #feature of redacted file
     data1 =[]
     for f in dire1:
         temp_f = open(f,"r")
         data1.append(temp_f.read())
-        #print(data)
+        print(data1)
     features1 = []
     for s in data1:
         features1.extend(make_features_redacted(s))
@@ -74,12 +77,12 @@ def main():
     clf = KNeighborsClassifier(n_neighbors=3)
     clf.fit(train_X, train_y)
 
-    print("Decison Tree: ", clf.predict(test_X), clf.predict_proba(test_X), test_y)
+  #  print("Decison Tree: ", clf.predict(test_X), clf.predict_proba(test_X), test_y)
 
-    print("Cross Val Score: ", cross_val_score(clf,
-                                              v.fit_transform([x for (x,y) in features]),
-                                               [y for (x,y) in features],
-                                               cv=2))
+   # print("Cross Val Score: ", cross_val_score(clf,
+    #                                          v.fit_transform([x for (x,y) in features]),
+     #                                          [y for (x,y) in features],
+      #                                         cv=2))
 
 
 if __name__ == "__main__":

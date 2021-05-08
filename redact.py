@@ -17,7 +17,7 @@ def redactName(doc):
     #print(nlp_doc)                
     for ent in nlp_doc:
         if ent.ent_type_ == "PERSON":
-            re.append("(REDACTED)")
+            re.append("Rithsek Ngem")
             num +=1
         else:
             re.append(ent.text)

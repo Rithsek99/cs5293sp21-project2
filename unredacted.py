@@ -25,14 +25,11 @@ def make_features(sentence, ne="PERSON"):
             # Number of occurences?
             D.append((d, e.text))
     return D
-def make_features_redacted(sentence, ne="REDACTED"):
+def make_features_redacted(sentence, ne="PERSON"):
     doc = nlp(sentence)
     D = []
-    #print(doc.ents)
     for e in doc.ents:
-        print(e.text)
-        if e.text == ne:
-            print("im here")
+        if e.label_ == ne:
             d = {}
             d["length"] = len(e.text)
             d["word_idx"] = e.start
@@ -44,12 +41,11 @@ def make_features_redacted(sentence, ne="REDACTED"):
 def main():
     # print(len(sample))
     dire = glob.glob("train_files/*.txt")
-    dire1 = glob.glob("train_files/*.redacted")
+    dire1 = glob.glob("train_files/0_0.redacted")
     data =[]
     for f in dire:
         temp_f = open(f,"r")
         data.append(temp_f.read())
-        #print(data)
     features = []
     for s in data:
         features.extend(make_features(s))
@@ -60,30 +56,26 @@ def main():
     for f in dire1:
         temp_f = open(f,"r")
         data1.append(temp_f.read())
-        print(data1)
     features1 = []
     for s in data1:
         features1.extend(make_features_redacted(s))
-    print(features1)
 
     v = DictVectorizer(sparse=False)
-    train_X = v.fit_transform([x for (x,y) in features[:-1]])
+    train_X = v.fit_transform([x for (x,y) in features[:]])
     train_y = [y for (x,y) in features[:-1]]
 
-    test_X = v.fit_transform([x for (x,y) in features[-1:]])
+    train_re = v.fit_transform([x for (x,y) in features1[:]])
+    test_re = [y for(x,y) in features1[:]]
+    #print(train_re)
+
+    test_X = v.fit_transform([x for (x,y) in features[:]])
     test_y = [y for (x,y) in features[-1:]]
 
     clf = DecisionTreeClassifier(criterion="entropy")
     clf = KNeighborsClassifier(n_neighbors=3)
-    clf.fit(train_X, train_y)
+    clf.fit(train_X, train_re)
 
-  #  print("Decison Tree: ", clf.predict(test_X), clf.predict_proba(test_X), test_y)
-
-   # print("Cross Val Score: ", cross_val_score(clf,
-    #                                          v.fit_transform([x for (x,y) in features]),
-     #                                          [y for (x,y) in features],
-      #                                         cv=2))
-
+    #print("Decison Tree: ", clf.predict(test_re), test_re)
 
 if __name__ == "__main__":
     nlp = spacy.load("en_core_web_sm")
